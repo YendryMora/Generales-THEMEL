@@ -1,0 +1,71 @@
+CREATE TABLE `categories` (
+  `cat_id` int(100) NOT NULL AUTO_INCREMENT,
+  `cat_title` text NOT NULL,
+  PRIMARY KEY (`cat_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+
+
+INSERT INTO `categories` VALUES (1,'Telefonos'),(2,'Computadoras');
+
+
+CREATE TABLE `brands` (
+  `brand_id` int(100) NOT NULL AUTO_INCREMENT,
+  `brand_title` text NOT NULL,
+  PRIMARY KEY (`brand_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+
+INSERT INTO `brands` VALUES (1,'Dell'),(2,'Samsumg'),(3,'MSI');
+
+
+CREATE TABLE `descrip` (
+	`descri_id` int(100) NOT NULL AUTO_INCREMENT,
+	`sistema` text NOT NULL,
+    `memoria` text NOT NULL,
+    `capacidad` text NOT NULL,
+	`pantalla` text NOT NULL,
+	`camara` text NOT NULL,
+	`puerto` text NOT NULL,
+	`wireless` text NOT NULL,
+	`bateria` text NOT NULL,
+  PRIMARY KEY (`descri_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+
+INSERT INTO `descrip` VALUES (1,'Android','8GB','32GB','Desconocido','16MPX','SD','Si','16mA')
+,(2,'Windows10','8GB','500GB','15 pulgadas','8MPX','USB 3.0','Si','160mA'),
+(3,'Windows10','8GB','1TB','15 pulgadas','8MPX','USB 3.0','Si','160mA');
+
+CREATE TABLE `products` (
+  `product_id` int(100) NOT NULL AUTO_INCREMENT,
+  `product_cat` int(100) NOT NULL,
+  `product_brand` int(100) NOT NULL,
+  `product_desc`  int(100) NOT NULL,
+  `product_title` varchar(255) NOT NULL,
+  `product_price` int(100) NOT NULL,
+  `product_qty` int(11) NOT NULL,
+  `product_image` text NOT NULL,
+  `product_keywords` text NOT NULL,
+  PRIMARY KEY (`product_id`),
+  KEY `fk_product_cat` (`product_cat`),
+  KEY `fk_product_brand` (`product_brand`),
+  KEY `fk_product_desc` (`product_desc`),
+  CONSTRAINT `fk_product_brand` FOREIGN KEY (`product_brand`) REFERENCES `brands` (`brand_id`),
+  CONSTRAINT `fk_product_cat` FOREIGN KEY (`product_cat`) REFERENCES `categories` (`cat_id`),
+  CONSTRAINT `fk_product_desc` FOREIGN KEY (`product_desc`) REFERENCES `descrip` (`descri_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=latin1;
+
+INSERT INTO `products` VALUES (1,1,2,1,'Samsung Galaxy S10+',500,5000,'1.jpg','')
+,(2,2,1,2,'Dell Inspiron 14R',800,5000,'dell.jpg',''),
+(3,2,3,3,'MSI GVB2 8RD',800,5000,'msi.jpg','');
+
+
+CREATE PROCEDURE PA_Detalle(ID INT(100))
+SELECT P.product_id, P.product_title, P.product_price, P.product_image, C.cat_title, B.brand_title, 
+D.sistema, D.memoria, D.capacidad, D.pantalla, D.camara, D.puerto, D.wireless, D.bateria  
+	FROM products AS P
+	inner join categories AS C
+    on product_cat = cat_id
+    inner join brands AS B
+    on product_brand = brand_id
+    inner join descrip AS D
+    on product_desc = descri_id
+WHERE P.product_id = ID
